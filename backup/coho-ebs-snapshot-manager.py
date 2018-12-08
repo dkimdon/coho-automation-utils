@@ -73,23 +73,23 @@ def create_snapshots():
     
     # Stop the instance.  This ensures that the EBS volumes are in a consistent state and
     # we will get a good snapshot.
-#    print("Stopping instance %s" % INSTANCE_ID)
-#    client.stop_instances(
-#        InstanceIds = [
-#            INSTANCE_ID,
-#        ]
-#    )
+    print("Stopping instance %s" % INSTANCE_ID)
+    client.stop_instances(
+        InstanceIds = [
+            INSTANCE_ID,
+        ]
+    )
     
     # It takes a few seconds for the instance to stop.  It needs to actually be stopped
     # before we take the snapshots.
     
-#    while True:
-#      time.sleep(10)
-#      state = client.describe_instances(InstanceIds=[INSTANCE_ID])['Reservations'][0]['Instances'][0]['State']['Name']
-#      if state == 'stopped':
-#        break
+    while True:
+      time.sleep(10)
+      state = client.describe_instances(InstanceIds=[INSTANCE_ID])['Reservations'][0]['Instances'][0]['State']['Name']
+      if state == 'stopped':
+        break
     
-#    print("Stopped instance %s" % INSTANCE_ID)
+    print("Stopped instance %s" % INSTANCE_ID)
     
     try:
     
@@ -165,12 +165,12 @@ def create_snapshots():
     # The snapshots are being created now we can start the instance.  We just
     # needed the instance stopped in order to get the volumes in a consistent state
     # to start the snapshots.
-#    print("Starting instance %s" % INSTANCE_ID)
-#    client.start_instances(
-#        InstanceIds = [
-#            INSTANCE_ID
-#        ]
-#    )
+    print("Starting instance %s" % INSTANCE_ID)
+    client.start_instances(
+        InstanceIds = [
+            INSTANCE_ID
+        ]
+    )
 
     return {
         "statusCode": 200
@@ -180,10 +180,8 @@ def lambda_handler(event, context):
     create_snapshots()
     delete_snapshots()
 
-    return {
-        "statusCode": 200
-    }
-
 
 if __name__ == '__main__':
     lambda_handler(None, None)
+
+
