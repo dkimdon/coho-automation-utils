@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 from __future__ import print_function
 from googleapiclient.discovery import build
 from httplib2 import Http
@@ -57,7 +59,7 @@ def collect_tasks():
     # If modifying these scopes, delete the file token.json.
     SCOPES = 'https://www.googleapis.com/auth/spreadsheets.readonly'
     SPREADSHEET_ID = '1EGhrt3WfEsQDmzMDjJz7jPEOxsAkEuZv-EChFjniZwk'
-    RANGE_NAME = 'a2:z100'
+    RANGE_NAME = 'a3:z100'
 
     # The file token.json stores the user's access and refresh tokens, and is
     # created automatically when the authorization flow completes for the first
@@ -84,12 +86,15 @@ def collect_tasks():
         for row in values:
             task = {}
             column = 0
+            done = row[column]
+            if done != '':
+                print('task is done, not sending mail')
+                continue
+            column += 1
             month = int(row[column])
             column += 1
-            day = int(row[column])
-            column += 1
-            if month != datetime.now().month or day != datetime.now().day:
-                print('skipping')
+            if month != datetime.now().month:
+                print('wrong month, skipping')
                 print(datetime.now().day)
                 print(day)
                 continue
