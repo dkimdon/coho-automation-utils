@@ -95,8 +95,6 @@ def collect_tasks():
             column += 1
             if month != datetime.now().month:
                 print('wrong month, skipping')
-                print(datetime.now().day)
-                print(day)
                 continue
             task['email'] = row[column]
             column += 1
