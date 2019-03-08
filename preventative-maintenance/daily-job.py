@@ -7,6 +7,7 @@ from oauth2client import file, client, tools
 import boto3
 from botocore.exceptions import ClientError
 from datetime import datetime
+import time
 
 def send_email(recipient, subject, body):
     AWS_REGION = "us-west-2"
@@ -109,3 +110,4 @@ if __name__ == '__main__':
     tasks = collect_tasks()
     for task in tasks:
         send_email(task['email'], task['subject'], task['body'])
+        time.sleep(2)
