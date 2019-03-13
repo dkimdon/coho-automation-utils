@@ -49,13 +49,6 @@ def send_email(recipient, subject, body):
         print("Email sent! Message ID:"),
         print(response['MessageId'])
 
-RECIPIENT = "dkimdon@gmail.com"
-SUBJECT = "CoHo PM Task"
-BODY_TEXT = ("Amazon SES Test (Python)\r\n"
-             "This email was sent with Amazon SES using the "
-             "AWS SDK for Python (Boto)."
-            )
-
 def collect_tasks():
     # If modifying these scopes, delete the file token.json.
     SCOPES = 'https://www.googleapis.com/auth/spreadsheets.readonly'
