@@ -49,11 +49,11 @@ def send_email(recipient, subject, body):
         print("Email sent! Message ID:"),
         print(response['MessageId'])
 
-def collect_tasks():
+def load_rows():
     # If modifying these scopes, delete the file token.json.
     SCOPES = 'https://www.googleapis.com/auth/spreadsheets.readonly'
     SPREADSHEET_ID = '1EGhrt3WfEsQDmzMDjJz7jPEOxsAkEuZv-EChFjniZwk'
-    RANGE_NAME = 'a3:z100'
+    RANGE_NAME = 'a1:z200'
 
     # The file token.json stores the user's access and refresh tokens, and is
     # created automatically when the authorization flow completes for the first
@@ -68,36 +68,72 @@ def collect_tasks():
     sheet = service.spreadsheets()
     result = sheet.values().get(spreadsheetId=SPREADSHEET_ID,
                                 range=RANGE_NAME).execute()
-    values = result.get('values', [])
+    return result.get('values', [])
 
-    currentMonth = datetime.now().month
-    currentDay = datetime.now().day
+
+def select_tasks(today, rows):
+    currentDay = today.day
+    currentMonth = today.month
+    currentYear = today.year
+
+    indexes = {
+        "subject": None,
+        "email": None,
+        "start": None,
+        "interval": None,
+        "month": None,
+        "done": None,
+        "body": None
+    }
+    # find the header row
+    headerIdx=0
+    for row in rows:
+        for key in indexes:
+            indexes[key] = None
+        for idx in range(0, len(row)):
+            for key, value in indexes.items():
+                if key.lower() in row[idx].lower():
+                    indexes[key] = idx
+                    break
+        headersFound = True
+        for key in indexes:
+            if indexes[key] == None:
+                headersFound = False
+        if headersFound:
+            break
+        else:
+            headerIdx=headerIdx+1
+        # If we found all values, break
+    if not headersFound:
+        return []
 
     tasks = []
-    if not values:
+    if not rows:
         print('No data found.')
     else:
-        for row in values:
+        for row in rows[headerIdx+1:]:
+            if len(row) < len(indexes):
+              continue
             task = {}
-            column = 0
-            done = row[column]
+            done = row[indexes['done']]
             if done != '':
-                print('task is done, not sending mail')
+                print('task is done, skipping')
+                print(row)
                 continue
-            column += 1
-            month = int(row[column])
-            column += 1
-            if month != datetime.now().month:
+            month = int(row[indexes['month']])
+            if month != currentMonth:
                 print('wrong month, skipping')
                 continue
-            task['email'] = row[column]
-            column += 1
-            task['subject'] = row[column]
-            column += 1
-            task['body'] = row[column]
-            column += 1
+            task['email'] = row[indexes['email']]
+            task['subject'] = row[indexes['subject']]
+            task['body'] = row[indexes['body']]
             tasks.append(task)
     return tasks
+
+def collect_tasks():
+    rows = load_rows()
+    print (rows)
+    return #select_tasks(datetime.now(), rows)
 
 if __name__ == '__main__':
     tasks = collect_tasks()
