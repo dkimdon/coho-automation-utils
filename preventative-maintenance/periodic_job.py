@@ -14,10 +14,10 @@ def send_email(recipient, subject, body):
     SENDER = "David Kimdon <dkimdon@gmail.com>"
     CHARSET = "UTF-8"
 
-    intro="""Hello,\n
-    Thank you for being the owner of this CoHo preventative maintenance task as you are contributing to the longevity of our physical community. As the owner of the task we are asking you to do the following:\n
-    - Do the task in the month scheduled or let Denis White capeblanco@peak.org know when you will complete the task or if you are unable to do so.\n
-    - When task is completed send an email back to Denis when the task was completed with the  information that should be recorded in the PM task history.\n
+    intro="""Hello,
+    Thank you for being the owner of this CoHo preventative maintenance task as you are contributing to the longevity of our physical community. As the owner of the task we are asking you to do the following:
+    - Do the task in the month scheduled or let Denis White capeblanco@peak.org know when you will complete the task or if you are unable to do so.
+    - When task is completed send an email back to Denis when the task was completed with the  information that should be recorded in the PM task history.
     - If the task is unclear or you need additional informational to safely complete the task please ask Bruce or Denis.\n
     - If the task is to be competed on a work party day you are responsible for notifying the work day coordinator and coordinating or getting assistance for your task.\n"""
 
