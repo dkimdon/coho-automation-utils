@@ -9,13 +9,24 @@ class TestPeriodicJob(unittest.TestCase):
         for i in range(0, len(expected)):
             self.assertDictEqual(actual[i], expected[i])
 
-    def test_basic(self):
+    # task was done last year, needs to be done this year, too
+    def test_empty_done(self):
         rows = [[],
-                ['subject', 'email', 'Year start', 'Year Interval', 'Month', 'done', 'body'],
-                ['this is a subject', 'd@g.com', '2000', '1', 'dec', '', 'do it']
+                ['subject', 'email',   'Year Interval', 'Month', 'done', 'body'],
+                ['sub',     'd@g.com', '1',             'dec',   'dec,2017',     'do it']
                ]
         tasks = select_tasks(datetime(2018, 12, 1), rows)
-        expected = [{'email': 'd@g.com', 'subject': 'this is a subject', 'body': 'do it' }]
+        expected = [{'email': 'd@g.com', 'subject': 'sub', 'body': 'do it' }]
+        self.verify_output(tasks, expected)
+
+    # This task was completed last year and doesn't need to be completed this year
+    def test_yearly_task_needs_to_be_done(self):
+        rows = [[],
+                ['subject', 'email',   'Year Interval', 'Month', 'done',     'body'],
+                ['sub',     'd@g.com', '5',             'Dec',   'Dec,2017', 'do it']
+               ]
+        tasks = select_tasks(datetime(2018, 12, 1), rows)
+        expected = []
         self.verify_output(tasks, expected)
 
 
