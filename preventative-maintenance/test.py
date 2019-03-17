@@ -12,7 +12,7 @@ class TestPeriodicJob(unittest.TestCase):
     def test_basic(self):
         rows = [[],
                 ['subject', 'email', 'Year start', 'Year Interval', 'Month', 'done', 'body'],
-                ['this is a subject', 'd@g.com', '2000', '1', '12', '', 'do it']
+                ['this is a subject', 'd@g.com', '2000', '1', 'dec', '', 'do it']
                ]
         tasks = select_tasks(datetime(2018, 12, 1), rows)
         expected = [{'email': 'd@g.com', 'subject': 'this is a subject', 'body': 'do it' }]
