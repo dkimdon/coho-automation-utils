@@ -122,17 +122,15 @@ def select_tasks(today, rows):
               continue
             task = {}
             done = row[indexes['done']]
-            (done_month, done_year) = done.split(",")
+            (monthDone, yearDone) = done.split(",")
 
-            year_interval = int(row[indexes['year interval']])
+            yearInterval = int(row[indexes['year interval']])
 
-            if currentYear < int(done_year) + year_interval:
-                print('task need not be done this year, skipping')
+            if currentYear < int(yearDone) + yearInterval:
                 continue
             
             month = row[indexes['month']].lower()[0:3]
             if month != currentMonth:
-                print('wrong month, skipping')
                 continue
             task['email'] = row[indexes['email']]
             task['subject'] = row[indexes['subject']]
