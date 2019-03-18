@@ -63,6 +63,20 @@ class TestPeriodicJob(unittest.TestCase):
         self.verify_output(tasks['todo'], expectedTodo)
 
 
+    ###########
+    # Backlog #
+    ###########
+
+    def test_task_should_have_been_done_last_month(self):
+        rows = [[],
+                ['subject', 'email',   'Year Interval', 'Month', 'done', 'body'],
+                ['sub',     'd@g.com', '1',             'dec',   'dec,2014',     'do it']
+               ]
+        tasks = select_tasks(datetime(2016, 1, 1), rows)
+        expectedBacklog = [{'email': 'd@g.com', 'subject': 'sub', 'body': 'do it' }]
+        self.verify_output(tasks['backlog'], expectedBacklog)
+
+
 if __name__ == '__main__':
     unittest.main()
 
