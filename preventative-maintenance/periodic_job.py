@@ -9,7 +9,7 @@ from botocore.exceptions import ClientError
 from datetime import datetime
 import time
 
-def send_email(recipient, subject, body):
+def send_task_email(recipient, subject, body):
     AWS_REGION = "us-west-2"
     SENDER = "David Kimdon <dkimdon@gmail.com>"
     CHARSET = "UTF-8"
@@ -80,7 +80,7 @@ def load_rows():
 
 def select_tasks(today, rows):
     currentDay = today.day
-    currentMonth = today.strftime("%B").lower()[0:3]
+    currentMonth = today.month
     currentYear = today.year
 
     indexes = {
@@ -114,6 +114,7 @@ def select_tasks(today, rows):
         return []
 
     todo = []
+    backlog = []
     if not rows:
         print('No data found.')
     else:
@@ -126,18 +127,36 @@ def select_tasks(today, rows):
 
             yearInterval = int(row[indexes['year interval']])
 
-            if currentYear < int(yearDone) + yearInterval:
-                continue
-            
-            month = row[indexes['month']].lower()[0:3]
-            if month != currentMonth:
-                continue
             task['email'] = row[indexes['email']]
             task['subject'] = row[indexes['subject']]
             task['body'] = row[indexes['body']]
+
+            if currentYear < int(yearDone) + yearInterval:
+                print("Need not be done this year")
+                continue
+
+            if currentYear > int(yearDone) + yearInterval:
+                print("Task should have been completed in a past year")
+                backlog.append(task)
+                continue
+
+            # At this point we know that task needs to be done some time this year.
+            # Check month
+            
+            month = datetime.strptime(row[indexes['month']].lower()[0:3], '%b').month
+
+            if currentMonth < month:
+                print("Need not be done yet this year")
+                continue
+
+            if currentMonth > month:
+                print("Task should have already been done")
+                backlog.append(task)
+                continue
+
             todo.append(task)
 
-    return { 'todo' : todo }
+    return { 'todo' : todo, 'backlog': backlog }
 
 def collect_tasks():
     rows = load_rows()
@@ -146,5 +165,5 @@ def collect_tasks():
 if __name__ == '__main__':
     tasks = collect_tasks()
     for task in tasks['todo']:
-        send_email(task['email'], task['subject'], task['body'])
+        send_task_email(task['email'], task['subject'], task['body'])
         time.sleep(2)
