@@ -113,7 +113,7 @@ def select_tasks(today, rows):
     if not headersFound:
         return []
 
-    tasks = []
+    todo = []
     if not rows:
         print('No data found.')
     else:
@@ -135,8 +135,9 @@ def select_tasks(today, rows):
             task['email'] = row[indexes['email']]
             task['subject'] = row[indexes['subject']]
             task['body'] = row[indexes['body']]
-            tasks.append(task)
-    return tasks
+            todo.append(task)
+
+    return { 'todo' : todo }
 
 def collect_tasks():
     rows = load_rows()
@@ -144,6 +145,6 @@ def collect_tasks():
 
 if __name__ == '__main__':
     tasks = collect_tasks()
-    for task in tasks:
+    for task in tasks['todo']:
         send_email(task['email'], task['subject'], task['body'])
         time.sleep(2)
