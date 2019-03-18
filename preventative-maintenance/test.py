@@ -19,8 +19,8 @@ class TestPeriodicJob(unittest.TestCase):
                 ['sub',     'd@g.com', '1',             'dec',   'dec,2017',     'do it']
                ]
         tasks = select_tasks(datetime(2018, 12, 1), rows)
-        expected = [{'email': 'd@g.com', 'subject': 'sub', 'body': 'do it' }]
-        self.verify_output(tasks, expected)
+        expectedTodo = [{'email': 'd@g.com', 'subject': 'sub', 'body': 'do it' }]
+        self.verify_output(tasks['todo'], expectedTodo)
 
     def test_task_was_done_this_year_already_and_it_does_not_need_to_be_done_again_yet(self):
         rows = [[],
@@ -28,8 +28,8 @@ class TestPeriodicJob(unittest.TestCase):
                 ['sub',     'd@g.com', '1',             'Dec',   'Dec,2018', 'do it']
                ]
         tasks = select_tasks(datetime(2018, 12, 1), rows)
-        expected = []
-        self.verify_output(tasks, expected)
+        expectedTodo = []
+        self.verify_output(tasks['todo'], expectedTodo)
 
     def test_task_was_done_last_year_but_it_is_not_time_to_do_it_yet(self):
         rows = [[],
@@ -37,8 +37,8 @@ class TestPeriodicJob(unittest.TestCase):
                 ['sub',     'd@g.com', '1',             'Dec',   'June,2017', 'do it']
                ]
         tasks = select_tasks(datetime(2018, 5, 1), rows)
-        expected = []
-        self.verify_output(tasks, expected)
+        expectedTodo = []
+        self.verify_output(tasks['todo'], expectedTodo)
 
     ###########################
     # Multi-year period tasks #
@@ -50,8 +50,8 @@ class TestPeriodicJob(unittest.TestCase):
                 ['sub',     'd@g.com', '5',             'Dec',   'Dec,2017', 'do it']
                ]
         tasks = select_tasks(datetime(2018, 12, 1), rows)
-        expected = []
-        self.verify_output(tasks, expected)
+        expectedTodo = []
+        self.verify_output(tasks['todo'], expectedTodo)
 
     def test_task_was_done_3_years_ago_and_now_needs_to_be_done_again(self):
         rows = [[],
@@ -59,8 +59,8 @@ class TestPeriodicJob(unittest.TestCase):
                 ['sub',     'd@g.com', '3',             'dec',   'dec,2015',     'do it']
                ]
         tasks = select_tasks(datetime(2018, 12, 1), rows)
-        expected = [{'email': 'd@g.com', 'subject': 'sub', 'body': 'do it' }]
-        self.verify_output(tasks, expected)
+        expectedTodo = [{'email': 'd@g.com', 'subject': 'sub', 'body': 'do it' }]
+        self.verify_output(tasks['todo'], expectedTodo)
 
 
 if __name__ == '__main__':
