@@ -1,0 +1,5 @@
+- Support multi-month tasks.  That is, tasks that have multiple values in the months column:
+  mar,sep
+  This tasks needs to be done in March and December.
+- Create summary email including tasks for this month as well as backlog.
+
