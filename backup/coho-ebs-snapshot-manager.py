@@ -76,7 +76,7 @@ def delete_snapshots():
           {
             'Name': 'tag:Type',
             'Values': [
-                'Daily',
+                'Monthly',
             ]
           },
       ],
