@@ -121,6 +121,15 @@ class TestPeriodicJob(unittest.TestCase):
         expectedBacklog = [{'email': 'd@g.com', 'subject': 'sub', 'body': 'do it' }]
         self.verify_output(tasks['backlog'], expectedBacklog)
 
+    def test_task_has_never_been_completed(self):
+        rows = [[],
+                ['subject', 'email',   'Year Interval', 'Month', 'done', 'body'],
+                ['sub',     'd@g.com', '1',             'dec',   '',     'do it']
+               ]
+        tasks = select_tasks(datetime(2016, 1, 1), rows)
+        expectedBacklog = [{'email': 'd@g.com', 'subject': 'sub', 'body': 'do it' }]
+        self.verify_output(tasks['backlog'], expectedBacklog)
+
 
 if __name__ == '__main__':
     unittest.main()
