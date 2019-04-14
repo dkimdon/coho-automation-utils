@@ -140,34 +140,46 @@ def select_tasks(today, rows):
         print('No data found.')
     else:
         for row in rows[headerIdx+1:]:
+            print('\n')
             print(row)
             if len(row) < len(indexes):
               continue
             task = {}
 
-            months = re.split("[\s,]+", row[indexes['month']].lower().strip())
-            for i in range(0, len(months)):
-                months[i] = datetime.strptime(months[i].strip()[0:3], '%b').month
+            month = row[indexes['month']].lower().strip().rstrip(",")
+            if len(month) == 0:
+                # assume January
+                month = [1]
+            else:
+                months = re.split("[\s,]+", month)
+                for i in range(0, len(months)):
+                    months[i] = datetime.strptime(months[i].strip()[0:3], '%b').month
             #months = months.sort()
             # 'months' is now a sorted array whose elements are integers
             # corresponding to the month when the task should be completed.
             # For example, a task that is to be completed in April and October
             # would have a months array of [4, 10]
 
-            task['email'] = row[indexes['email']] if len(row) > indexes['email'] else ''
-            task['subject'] = row[indexes['subject']] if len(row) > indexes['subject'] else ''
-            task['body'] = row[indexes['body']] if len(row) > indexes['body'] else ''
+            task['email'] = row[indexes['email']].strip() if len(row) > indexes['email'] else ''
+            task['subject'] = row[indexes['subject']].strip() if len(row) > indexes['subject'] else ''
+            task['body'] = row[indexes['body']].strip() if len(row) > indexes['body'] else ''
 
             done = row[indexes['done']].lower().strip()
-            if len(done) == 0:
+            if len(done) == 0 or done == '?':
                 print("Task has never been completed")
                 backlog.append(task)
                 continue
 
-            (monthDone, yearDone) = re.split("[\s,]+", done)
-            monthDone = datetime.strptime(monthDone[0:3], '%b').month
-            yearDone = int(yearDone)
-            yearInterval = int(row[indexes['year interval']])
+            splittedDone = re.split("[\s,]+", done)
+            if len(splittedDone) == 2:
+                monthDone = datetime.strptime(splittedDone[0].strip().lower()[0:3], '%b').month
+                yearDone = int(splittedDone[1].strip())
+            else:
+                # Assume all we have is a year
+                yearDone = int(splittedDone[0].strip())
+                monthDone = 12  # XXX - Assume December
+
+            yearInterval = int(row[indexes['year interval']].strip())
 
             todoMonth = None
             # Consider the last time the task was done.  Was the task done all
@@ -226,4 +238,4 @@ if __name__ == '__main__':
     for task in tasks['todo']:
         send_task_email([task['email']], task['subject'], task['body'])
         time.sleep(2)
-    send_summary_email(['dkimdon@gmail.com'], tasks):
+    send_summary_email(['dkimdon@gmail.com'], tasks)
