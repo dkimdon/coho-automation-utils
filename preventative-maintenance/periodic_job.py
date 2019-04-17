@@ -71,7 +71,8 @@ def send_summary_email(recipients, tasks):
     else:
         body += "Tasks remaining for this month:\n"
         for task in tasks['todo']:
-            body += "\t-%s is tasked to %s\n" % (task['email'], task['subject'])
+            email = task['email'] if task['email'] != '' else 'No one'
+            body += "\t-%s is tasked to %s\n" % (email, task['subject'])
 
     if len(tasks['backlog']) == 0:
         body += "There are no leftover tasks from previous months."
