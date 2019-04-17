@@ -9,10 +9,15 @@ from botocore.exceptions import ClientError
 from datetime import datetime
 import time
 import re
+import sys
+import argparse
+import pprint
+import calendar
 
-def send_email(recipient, subject, body):
+def send_email(recipients, subject, body):
     AWS_REGION = "us-west-2"
-    SENDER = "David Kimdon <dkimdon@gmail.com>"
+    SENDER = "CoHo Preventative Maintenance Reminder <dkimdon@gmail.com>"
+    REPLY_TO = "Denis White <capeblanco@peak.org>"
     CHARSET = "UTF-8"
 
     client = boto3.client('ses',region_name=AWS_REGION)
@@ -38,7 +43,7 @@ def send_email(recipient, subject, body):
                 },
             },
             ReplyToAddresses=[
-                SENDER,
+                REPLY_TO,
             ],
             Source=SENDER,
         )
@@ -73,7 +78,8 @@ def send_summary_email(recipients, tasks):
     else:
         body += "Uncompleted tasks from previous months:\n"
         for task in tasks['backlog']:
-            body += "\t-%s was tasked to %s\n" % (task['email'], task['subject'])
+            email = task['email'] if task['email'] != '' else 'No one'
+            body += "\t-%s was tasked to %s, last done %s\n" % (email, task['subject'], task['done'])
 
     send_email(recipients, subject, body)
 
@@ -167,6 +173,7 @@ def select_tasks(today, rows):
             done = row[indexes['done']].lower().strip()
             if len(done) == 0 or done == '?':
                 print("Task has never been completed")
+                task['done'] = 'never'
                 backlog.append(task)
                 continue
 
@@ -179,6 +186,7 @@ def select_tasks(today, rows):
                 yearDone = int(splittedDone[0].strip())
                 monthDone = 12  # XXX - Assume December
 
+            task['done'] = '%s %d' % (calendar.month_name[monthDone], yearDone)
             yearInterval = int(row[indexes['year interval']].strip())
 
             todoMonth = None
@@ -229,13 +237,24 @@ def select_tasks(today, rows):
 
     return { 'todo' : todo, 'backlog': backlog }
 
-def collect_tasks():
+def collect_tasks(today):
     rows = load_rows()
-    return select_tasks(datetime.now(), rows)
+    return select_tasks(today, rows)
 
 if __name__ == '__main__':
-    tasks = collect_tasks()
-    for task in tasks['todo']:
-        send_task_email([task['email']], task['subject'], task['body'])
-        time.sleep(2)
-    send_summary_email(['dkimdon@gmail.com'], tasks)
+    parser = argparse.ArgumentParser(description='Preventative maintenance email reminder.')
+    parser.add_argument('--date', help='Dry-run mode using the specified DATE in YYYYMMDD format as today.')
+    options = parser.parse_args()
+    if options.date == None:
+      tasks = collect_tasks(datetime.now())
+      for task in tasks['todo']:
+        if task['email'] != '':
+          send_task_email([task['email']], task['subject'], task['body'])
+          time.sleep(2)
+      send_summary_email(['capeblanco@peak.org', 'brucehe@peak.org', 'dkimdon@gmail.com'], tasks)
+    else:
+      faketoday = datetime.strptime(options.date, '%Y%m%d')
+      tasks = collect_tasks(faketoday)
+      pp = pprint.PrettyPrinter(indent=4)
+      pprint.pprint(tasks)
+
