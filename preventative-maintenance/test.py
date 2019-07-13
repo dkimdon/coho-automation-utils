@@ -19,7 +19,7 @@ class TestPeriodicJob(unittest.TestCase):
                 ['sub',     'd@g.com', '1',             'dec',   'dec,2017',     'do it']
                ]
         tasks = select_tasks(datetime(2018, 12, 1), rows)
-        expectedTodo = [{'email': 'd@g.com', 'subject': 'sub', 'body': 'do it' }]
+        expectedTodo = [{'email': 'd@g.com', 'subject': 'sub', 'body': 'do it', 'done': 'December 2017'}]
         self.verify_output(tasks['todo'], expectedTodo)
         self.verify_output(tasks['backlog'], [])
 
@@ -60,7 +60,7 @@ class TestPeriodicJob(unittest.TestCase):
                 ['sub',     'd@g.com', '3',             'dec',   'dec,2015',     'do it']
                ]
         tasks = select_tasks(datetime(2018, 12, 1), rows)
-        expectedTodo = [{'email': 'd@g.com', 'subject': 'sub', 'body': 'do it' }]
+        expectedTodo = [{'email': 'd@g.com', 'subject': 'sub', 'body': 'do it', 'done': 'December 2015' }]
         self.verify_output(tasks['todo'], expectedTodo)
         self.verify_output(tasks['backlog'], [])
 
@@ -74,7 +74,7 @@ class TestPeriodicJob(unittest.TestCase):
                 ['sub',     'd@g.com', '1',             'Jun,Sep',   'Sep,2017', 'do it']
                ]
         tasks = select_tasks(datetime(2018, 6, 1), rows)
-        expectedTodo = [{'email': 'd@g.com', 'subject': 'sub', 'body': 'do it' }]
+        expectedTodo = [{'email': 'd@g.com', 'subject': 'sub', 'body': 'do it', 'done': 'September 2017' }]
         self.verify_output(tasks['todo'], expectedTodo)
         self.verify_output(tasks['backlog'], [])
 
@@ -84,7 +84,7 @@ class TestPeriodicJob(unittest.TestCase):
                 ['sub',     'd@g.com', '1',             'Jun,Sep',   'Sep,2017', 'do it']
                ]
         tasks = select_tasks(datetime(2018, 7, 1), rows)
-        expectedBacklog = [{'email': 'd@g.com', 'subject': 'sub', 'body': 'do it' }]
+        expectedBacklog = [{'email': 'd@g.com', 'subject': 'sub', 'body': 'do it', 'done': 'September 2017' }]
         self.verify_output(tasks['todo'], [])
         self.verify_output(tasks['backlog'], expectedBacklog)
 
@@ -94,7 +94,7 @@ class TestPeriodicJob(unittest.TestCase):
                 ['sub',     'd@g.com', '1',             'Jun,Sep',   'Jun,2018', 'do it']
                ]
         tasks = select_tasks(datetime(2018, 9, 1), rows)
-        expectedTodo = [{'email': 'd@g.com', 'subject': 'sub', 'body': 'do it' }]
+        expectedTodo = [{'email': 'd@g.com', 'subject': 'sub', 'body': 'do it', 'done': 'June 2018' }]
         self.verify_output(tasks['todo'], expectedTodo)
         self.verify_output(tasks['backlog'], [])
 
@@ -118,7 +118,7 @@ class TestPeriodicJob(unittest.TestCase):
                 ['sub',     'd@g.com', '1',             'dec',   'dec,2014',     'do it']
                ]
         tasks = select_tasks(datetime(2016, 1, 1), rows)
-        expectedBacklog = [{'email': 'd@g.com', 'subject': 'sub', 'body': 'do it' }]
+        expectedBacklog = [{'email': 'd@g.com', 'subject': 'sub', 'body': 'do it', 'done': 'December 2014' }]
         self.verify_output(tasks['backlog'], expectedBacklog)
 
     def test_task_has_never_been_completed(self):
@@ -127,7 +127,7 @@ class TestPeriodicJob(unittest.TestCase):
                 ['sub',     'd@g.com', '1',             'dec',   '',     'do it']
                ]
         tasks = select_tasks(datetime(2016, 1, 1), rows)
-        expectedBacklog = [{'email': 'd@g.com', 'subject': 'sub', 'body': 'do it' }]
+        expectedBacklog = [{'email': 'd@g.com', 'subject': 'sub', 'body': 'do it', 'done': 'never' }]
         self.verify_output(tasks['backlog'], expectedBacklog)
 
 
