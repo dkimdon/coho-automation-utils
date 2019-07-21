@@ -54,6 +54,25 @@ class TestPeriodicJob(unittest.TestCase):
         self.verify_output(tasks['todo'], [])
         self.verify_output(tasks['backlog'], [])
 
+    def test_task_completed_years_ago_does_not_need_to_be_completed_this_year(self):
+        rows = [[],
+                ['subject', 'email',   'Year Interval', 'Month', 'done',     'body'],
+                ['Sanitary lines', 'brucehe@peak.org', '5', 'July', 'April, 2017', 'do sewer thing']
+               ]
+        tasks = select_tasks(datetime(2019, 7, 11), rows)
+        self.verify_output(tasks['todo'], [])
+        self.verify_output(tasks['backlog'], [])
+
+    def test_task_completed_years_ago_needs_to_be_completed_this_year(self):
+        rows = [[],
+                ['subject', 'email',   'Year Interval', 'Month', 'done',     'body'],
+                ['Sanitary lines', 'brucehe@peak.org', '5', 'July', 'April, 2017', 'do sewer thing']
+               ]
+        tasks = select_tasks(datetime(2022, 7, 11), rows)
+        expectedTodo = [{'email': 'brucehe@peak.org', 'subject': 'Sanitary lines', 'body': 'do sewer thing', 'done': 'April 2017' }]
+        self.verify_output(tasks['todo'], expectedTodo)
+        self.verify_output(tasks['backlog'], [])
+
     def test_task_was_done_3_years_ago_and_now_needs_to_be_done_again(self):
         rows = [[],
                 ['subject', 'email',   'Year Interval', 'Month', 'done', 'body'],
