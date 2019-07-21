@@ -156,12 +156,12 @@ def select_tasks(today, rows):
             month = row[indexes['month']].lower().strip().rstrip(",")
             if len(month) == 0:
                 # assume January
-                month = [1]
+                months = [1]
             else:
                 months = re.split("[\s,]+", month)
                 for i in range(0, len(months)):
                     months[i] = datetime.strptime(months[i].strip()[0:3], '%b').month
-            #months = months.sort()
+            months.sort()
             # 'months' is now a sorted array whose elements are integers
             # corresponding to the month when the task should be completed.
             # For example, a task that is to be completed in April and October
