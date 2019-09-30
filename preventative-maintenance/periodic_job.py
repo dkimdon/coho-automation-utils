@@ -26,9 +26,6 @@ def send_email(recipients, subject, body):
         response = client.send_email(
             Destination={
                 'ToAddresses': recipients,
-                'CcAddresses': [
-                    SENDER,
-                ],
             },
             Message={
                 'Body': {
