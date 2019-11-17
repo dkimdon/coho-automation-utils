@@ -63,6 +63,16 @@ class TestPeriodicJob(unittest.TestCase):
         self.verify_output(tasks['todo'], [])
         self.verify_output(tasks['backlog'], [])
 
+    def test_task_completed_recently_need_not_be_completed_this_year(self):
+        rows = [[],
+                ['subject', 'email',   'Year Interval', 'Month', 'done',     'body'],
+                ['Sanitary lines', 'brucehe@peak.org', '5', 'July', 'April, 2017', 'do sewer thing']
+               ]
+        tasks = select_tasks(datetime(2019, 7, 11), rows)
+        expectedTodo = []
+        self.verify_output(tasks['todo'], expectedTodo)
+        self.verify_output(tasks['backlog'], [])
+
     def test_task_completed_years_ago_needs_to_be_completed_this_year(self):
         rows = [[],
                 ['subject', 'email',   'Year Interval', 'Month', 'done',     'body'],

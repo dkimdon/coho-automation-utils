@@ -187,6 +187,10 @@ def select_tasks(today, rows):
             task['done'] = '%s %d' % (calendar.month_name[monthDone], yearDone)
             yearInterval = int(row[indexes['year interval']].strip())
 
+            if yearInterval > 1 and currentYear < yearDone + yearInterval:
+                print("Task need not be done this year")
+                continue
+
             # Create an array of years when the task should be completed.  Start with
             # the last year done
             #years = [yearDone, yearDone + yearInterval]
@@ -211,7 +215,7 @@ def select_tasks(today, rows):
                     print("Task should have been completed this year")
                     backlog.append(task)
                     continue
-                elif currentMonth == todoMonth and yearInterval == 1:
+                elif currentMonth == todoMonth:
                     print("Task is due to be completed this month")
                     todo.append(task)
                     continue
