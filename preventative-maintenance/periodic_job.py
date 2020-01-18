@@ -85,7 +85,7 @@ def load_rows():
     # If modifying these scopes, delete the file token.json.
     SCOPES = 'https://www.googleapis.com/auth/spreadsheets.readonly'
     SPREADSHEET_ID = '1EGhrt3WfEsQDmzMDjJz7jPEOxsAkEuZv-EChFjniZwk'
-    RANGE_NAME = 'a1:z200'
+    RANGE_NAME = 'Buildings'
 
     # The file token.json stores the user's access and refresh tokens, and is
     # created automatically when the authorization flow completes for the first
