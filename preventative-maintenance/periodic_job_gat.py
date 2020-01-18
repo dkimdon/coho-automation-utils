@@ -16,8 +16,8 @@ import calendar
 
 def send_email(recipients, subject, body):
     AWS_REGION = "us-west-2"
-    SENDER = "CoHo GAT Maintenance Reminder <stony.lohr@gmail.com>"
-    REPLY_TO = "Stony Lohr <stony.lohr@gmail.com>"
+    SENDER = "CoHo GAT Maintenance Reminder <stonylohr@gmail.com>"
+    REPLY_TO = "Stony Lohr <stonylohr@gmail.com>"
     CHARSET = "UTF-8"
 
     client = boto3.client('ses',region_name=AWS_REGION)
@@ -53,7 +53,7 @@ def send_email(recipients, subject, body):
 def send_task_email(recipients, subject, body):
     intro="""Hello,
     Thank you for being the owner of this CoHo preventative maintenance task as you are contributing to the longevity of our physical community. As the owner of the task we are asking you to do the following:
-    - Do the task in the month scheduled or let Stony Lohr stony.lohr@gmail.com know when you will complete the task or if you are unable to do so.
+    - Do the task in the month scheduled or let Stony Lohr stonylohr@gmail.com know when you will complete the task or if you are unable to do so.
     - When task is completed send an email back to Stony when the task was completed with the  information that should be recorded in the PM task history.
     - If the task is unclear or you need additional informational to safely complete the task please ask Stony or Amy.\n
     - If the task is to be competed on a work party day you are responsible for notifying the work day coordinator and coordinating or getting assistance for your task.\n"""
@@ -201,7 +201,7 @@ if __name__ == '__main__':
         if task['email'] != '':
           send_task_email([task['email']], task['subject'], task['body'])
           time.sleep(2)
-      send_summary_email(['stony.lohr@gmail.com'], tasks)
+      send_summary_email(['stonylohr@gmail.com'], tasks)
     else:
       faketoday = datetime.strptime(options.date, '%Y%m%d')
       tasks = collect_tasks(faketoday)
