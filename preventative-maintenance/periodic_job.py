@@ -104,15 +104,13 @@ def load_rows():
 
 
 def select_tasks(today, rows):
-    currentDay = today.day
     currentMonth = today.month
     currentYear = today.year
 
     indexes = {
         "subject": None,
         "email": None,
-        "year interval": None,
-        "month": None,
+        "month interval": None,
         "done": None,
         "body": None
     }
@@ -150,20 +148,6 @@ def select_tasks(today, rows):
               continue
             task = {}
 
-            month = row[indexes['month']].lower().strip().rstrip(",")
-            if len(month) == 0:
-                # assume January
-                months = [1]
-            else:
-                months = re.split("[\s,]+", month)
-                for i in range(0, len(months)):
-                    months[i] = datetime.strptime(months[i].strip()[0:3], '%b').month
-            months.sort()
-            # 'months' is now a sorted array whose elements are integers
-            # corresponding to the month when the task should be completed.
-            # For example, a task that is to be completed in April and October
-            # would have a months array of [4, 10]
-
             task['email'] = row[indexes['email']].strip() if len(row) > indexes['email'] else ''
             task['subject'] = row[indexes['subject']].strip() if len(row) > indexes['subject'] else ''
             task['body'] = row[indexes['body']].strip() if len(row) > indexes['body'] else ''
@@ -175,6 +159,8 @@ def select_tasks(today, rows):
                 backlog.append(task)
                 continue
 
+            monthInterval = int(row[indexes['month interval']].strip())
+
             splittedDone = re.split("[\s,]+", done)
             if len(splittedDone) == 2:
                 monthDone = datetime.strptime(splittedDone[0].strip().lower()[0:3], '%b').month
@@ -185,66 +171,19 @@ def select_tasks(today, rows):
                 monthDone = 12  # XXX - Assume December
 
             task['done'] = '%s %d' % (calendar.month_name[monthDone], yearDone)
-            yearInterval = int(row[indexes['year interval']].strip())
 
-            if yearInterval > 1 and currentYear < yearDone + yearInterval:
-                print("Task need not be done this year")
-                continue
+            # todoMonthEpoc and currentMonthEpoc are in units of months since the year zero
+            todoMonthEpoc = yearDone * 12 + monthDone + monthInterval
+            currentMonthEpoc = currentYear * 12 + currentMonth
+            if todoMonthEpoc == currentMonthEpoc:
+                print("Task is due to be completed this month")
+                todo.append(task)
+            elif todoMonthEpoc > currentMonthEpoc:
+                print("Task need not be completed yet")
+            elif todoMonthEpoc < currentMonthEpoc:
+                print("Task should have been completed")
+                backlog.append(task) 
 
-            # Create an array of years when the task should be completed.  Start with
-            # the last year done
-            #years = [yearDone, yearDone + yearInterval]
-
-            todoMonth = None
-
-            # For tasks that are to be completed multiple times in a year the year
-            # interval doesn't actually indicate how much time should pass between
-            # task execution.
-
-            # Consider the last time the task was done.  Was the task done all
-            # required months that year?
-            for i in range(0, len(months)):
-                if monthDone >= months[i]:
-                    continue
-                else:
-                    # This is the next month when the task should be done
-                    todoMonth = months[i]
-
-            if todoMonth != None:
-                if currentMonth > todoMonth:
-                    print("Task should have been completed this year")
-                    backlog.append(task)
-                    continue
-                elif currentMonth == todoMonth:
-                    print("Task is due to be completed this month")
-                    todo.append(task)
-                    continue
-            else:
-                todoMonth = months[0]
-
-            if currentYear < yearDone + yearInterval:
-                print("Task need not be done this year")
-                continue
-
-            if currentYear > yearDone + yearInterval:
-                print("Task should have been completed in a past year")
-                backlog.append(task)
-                continue
-
-            # At this point we know that task needs to be done some time this year.
-            # Check month
-
-            if currentMonth < todoMonth:
-                print("Task need not be done yet this year")
-                continue
-
-            if currentMonth > todoMonth:
-                print("Task should have already been done")
-                backlog.append(task)
-                continue
-
-            print("Task is due to be completed this month")
-            todo.append(task)
 
     return { 'todo' : todo, 'backlog': backlog }
 
