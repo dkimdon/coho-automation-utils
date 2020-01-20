@@ -201,7 +201,7 @@ if __name__ == '__main__':
         if task['email'] != '':
           send_task_email([task['email']], task['subject'], task['body'])
           time.sleep(2)
-      send_summary_email(['stonylohr@gmail.com'], tasks)
+      send_summary_email(['stonylohr@gmail.com', 'aevebecker@yahoo.com'], tasks)
     else:
       faketoday = datetime.strptime(options.date, '%Y%m%d')
       tasks = collect_tasks(faketoday)
