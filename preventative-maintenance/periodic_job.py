@@ -166,9 +166,14 @@ def select_tasks(today, rows):
                 monthDone = datetime.strptime(splittedDone[0].strip().lower()[0:3], '%b').month
                 yearDone = int(splittedDone[1].strip())
             else:
-                # Assume all we have is a year
-                yearDone = int(splittedDone[0].strip())
-                monthDone = 12  # XXX - Assume December
+                splittedDone = re.split("[/]", done)
+                if len(splittedDone) == 3:
+                    yearDone = int(splittedDone[2].strip())
+                    monthDone = int(splittedDone[0].strip())
+                else:
+                    # Assume all we have is a year
+                    yearDone = int(splittedDone[0].strip())
+                    monthDone = 12  # XXX - Assume December
 
             task['done'] = '%s %d' % (calendar.month_name[monthDone], yearDone)
 

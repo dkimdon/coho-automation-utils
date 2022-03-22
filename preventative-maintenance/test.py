@@ -159,6 +159,19 @@ class TestPeriodicJob(unittest.TestCase):
         expectedBacklog = [{'email': 'd@g.com', 'subject': 'sub', 'body': 'do it', 'done': 'never' }]
         self.verify_output(tasks['backlog'], expectedBacklog)
 
+    # Misc tests
+
+
+    def test_with_non_standard_done_column_format(self):
+        rows = [[],
+                ['subject', 'email',   'Month Interval', 'done', 'body'],
+                ['sub',     'd@g.com', '36',             '12/12/2015',     'do it']
+               ]
+        tasks = select_tasks(datetime(2018, 12, 1), rows)
+        expectedTodo = [{'email': 'd@g.com', 'subject': 'sub', 'body': 'do it', 'done': 'December 2015' }]
+        self.verify_output(tasks['todo'], expectedTodo)
+        self.verify_output(tasks['backlog'], [])
+
 
 if __name__ == '__main__':
     unittest.main()
