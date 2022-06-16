@@ -206,6 +206,10 @@ if __name__ == '__main__':
         if task['email'] != '':
           send_task_email([task['email']], task['subject'], task['body'])
           time.sleep(2)
+      for task in tasks['backlog']:
+        if task['email'] != '':
+          send_task_email([task['email']], "PAST DUE: (last done %s) " % (task['done']) + task['subject'], task['body'])
+          time.sleep(2)
       send_summary_email(['capeblanco@peak.org', 'brucehe@peak.org', 'dkimdon@gmail.com'], tasks)
     else:
       faketoday = datetime.strptime(options.date, '%Y%m%d')
