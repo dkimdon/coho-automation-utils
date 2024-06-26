@@ -63,18 +63,10 @@ def send_summary_email(recipients, tasks):
     subject = "Preventative Maintenance Summary: " + datetime.today().strftime('%Y-%m-%d')
     body = ''
 
-    if len(tasks['todo']) == 0:
-        body += "There are no remaining tasks for this month."
-    else:
-        body += "Tasks remaining for this month:\n"
-        for task in tasks['todo']:
-            email = task['email'] if task['email'] != '' else 'No one'
-            body += "\t-%s is tasked to %s, last done %s\n" % (email, task['subject'], task['done'])
-
     if len(tasks['backlog']) == 0:
-        body += "There are no leftover tasks from previous months."
+        body += "There are no leftover tasks from previous months.\n"
     else:
-        body += "Uncompleted tasks from previous months:\n"
+        body += "\nUncompleted tasks from previous months:\n\n"
         for task in tasks['backlog']:
             email = task['email'] if task['email'] != '' else 'No one'
             body += "\t-%s was tasked to %s, last done %s\n" % (email, task['subject'], task['done'])
