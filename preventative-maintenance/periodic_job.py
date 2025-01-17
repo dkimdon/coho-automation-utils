@@ -1,9 +1,5 @@
 #!/usr/bin/env python3
 
-from __future__ import print_function
-from googleapiclient.discovery import build
-from httplib2 import Http
-from oauth2client import file, client, tools
 import boto3
 from botocore.exceptions import ClientError
 from datetime import datetime
@@ -13,6 +9,8 @@ import sys
 import argparse
 import pprint
 import calendar
+import requests
+import csv
 
 def send_email(recipients, subject, body):
     AWS_REGION = "us-west-2"
@@ -73,26 +71,26 @@ def send_summary_email(recipients, tasks):
 
     send_email(recipients, subject, body)
 
-def load_rows():
-    # If modifying these scopes, delete the file token.json.
-    SCOPES = 'https://www.googleapis.com/auth/spreadsheets.readonly'
+def load_rows_public():
+    # Google Spreadsheet CSV export URL format
     SPREADSHEET_ID = '1EGhrt3WfEsQDmzMDjJz7jPEOxsAkEuZv-EChFjniZwk'
-    RANGE_NAME = 'Buildings'
-
-    # The file token.json stores the user's access and refresh tokens, and is
-    # created automatically when the authorization flow completes for the first
-    # time.
-    store = file.Storage('token.json')
-    creds = store.get()
-    if not creds or creds.invalid:
-        flow = client.flow_from_clientsecrets('credentials.json', SCOPES)
-        creds = tools.run_flow(flow, store)
-    service = build('sheets', 'v4', http=creds.authorize(Http()))
-
-    sheet = service.spreadsheets()
-    result = sheet.values().get(spreadsheetId=SPREADSHEET_ID,
-                                range=RANGE_NAME).execute()
-    return result.get('values', [])
+    url = "https://docs.google.com/spreadsheets/d/{}/export?format=csv".format(SPREADSHEET_ID)
+    
+    try:
+        # Fetch the data from the public spreadsheet
+        response = requests.get(url)
+        response.raise_for_status()  # Raise an error for HTTP issues
+        
+        # Parse CSV data into a 2D array
+        data = []
+        reader = csv.reader(response.text.splitlines())
+        for row in reader:
+            data.append(row)
+        
+        return data
+    except requests.exceptions.RequestException as e:
+        print("An error occurred:", e)
+        return None
 
 
 def select_tasks(today, rows):
@@ -185,7 +183,7 @@ def select_tasks(today, rows):
     return { 'todo' : todo, 'backlog': backlog }
 
 def collect_tasks(today):
-    rows = load_rows()
+    rows = load_rows_public()
     return select_tasks(today, rows)
 
 if __name__ == '__main__':
